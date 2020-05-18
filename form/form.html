@@ -1,0 +1,20 @@
+<div>
+    <!-- To choose how many dices to roll -->
+    <label for="diceNumber">Number of Dice</label>
+    <input type="number" id="diceNumber" value="1" min="1">
+
+    <!-- To choose which type of dices to roll -->
+    <label for="diceType">Type of Dice</label>
+    <select id="diceType">
+        <option value="4" selected>4</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+        <option value="20">20</option>
+        <option value="100">100</option>
+    </select>
+
+    <button type="button" id="roll">Roll</button>
+    <p><span class="font-weight-bold">Result : </span><span id="result"></span></p>
+</div>
