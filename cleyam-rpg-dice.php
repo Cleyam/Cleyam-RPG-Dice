@@ -19,6 +19,8 @@
 wp_enqueue_script('cleyam-rpg-dice', plugin_dir_url(__FILE__) . 'js/cleyam-rpg-dice.js', array('jquery'), null, true);
 wp_register_style('prefix_bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
 wp_enqueue_style('prefix_bootstrap');
+wp_register_style('custom-css', plugin_dir_url(__FILE__) . 'css/cleyam-rpg-dice.css');
+wp_enqueue_style('custom-css');
 
 function cleyamDice()
 {
