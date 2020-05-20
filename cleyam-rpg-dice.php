@@ -10,12 +10,21 @@
  */
 
 // Add the custom js file into the plugin, compatible with jquery
-wp_enqueue_script('cleyam-rpg-dice', plugin_dir_url(__FILE__) . 'js/cleyam-rpg-dice.js', array('jquery'), null, true);
-wp_register_style('prefix_bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
-wp_enqueue_style('prefix_bootstrap');
-wp_register_style('custom-css', plugin_dir_url(__FILE__) . 'css/cleyam-rpg-dice.css');
-wp_enqueue_style('custom-css');
 
+function cleyam_assets()
+{
+
+
+    wp_register_style('prefix_bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
+    wp_enqueue_style('prefix_bootstrap');
+
+    wp_register_style('custom-css', plugin_dir_url(__FILE__) . 'css/cleyam-rpg-dice.css');
+    wp_enqueue_style('custom-css');
+
+    wp_enqueue_script('cleyam-rpg-dice', plugin_dir_url(__FILE__) . 'js/cleyam-rpg-dice.js', array('jquery'), null, true);
+    wp_localize_script('cleyam-rpg-dice', 'ajaxurl', admin_url('admin-ajax.php'));
+}
+add_action('wp_enqueue_scripts', 'cleyam_assets');
 
 // Create or delete roll history when installing or uninstalling the plugin
 register_activation_hook(__FILE__, 'cleyamDice_create_table');
@@ -28,7 +37,7 @@ function cleyamDice_create_table()
     $sql = "CREATE TABLE IF NOT EXISTS $wp_track_table ( 
         `id` int(11) NOT NULL AUTO_INCREMENT, 
         `user_id` int(11) NOT NULL,
-        `time` datetime NOT NULL, 
+        `time` datetime NOT NULL DEFAULT NOW(), 
         `diceNumber` int(11) NOT NULL, 
         `diceType` int(11) NOT NULL, 
         `result` varchar(255) NOT NULL, 
@@ -50,7 +59,7 @@ function cleyamDice_delete_table()
 function cleyamDice()
 {
     ob_start();
-    require_once('html/form.html');
+    require_once('content/form.html');
     $html = ob_get_clean();
     return $html;
 }
@@ -73,8 +82,34 @@ function cleyamDice_admin_menu()
 
 function cleyamDice_admin()
 {
+    global $wpdb;
+    $wp_track_table = $wpdb->prefix . 'cleyam_rpg_dice';
+    $result = $wpdb->get_var("SELECT * FROM $wp_track_table;");
+    var_dump($result);
+    die();
     ob_start();
-    require_once('html/admin.html');
+    require_once('content/admin.php');
     $html = ob_get_clean();
     echo $html;
+}
+
+
+add_action('wp_ajax_insert_roll', 'cleyam_store_rolls');
+
+function cleyam_store_rolls()
+{
+
+    global $wpdb;
+
+    $wp_track_table = $wpdb->prefix . 'cleyam_rpg_dice';
+    $data = array(
+        'user_id' => get_current_user_id(),
+        'time' => date("Y-m-d H:i:s"),
+        'diceNumber' => $_POST['diceNumber'],
+        'diceType' => $_POST['diceType'],
+        'result' => $_POST['result']
+    );
+    $format = array('%s', '%d');
+
+    $wpdb->insert($wp_track_table, $data, $format);
 }
