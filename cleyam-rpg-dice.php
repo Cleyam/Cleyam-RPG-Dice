@@ -17,25 +17,33 @@ wp_register_style('custom-css', plugin_dir_url(__FILE__) . 'css/cleyam-rpg-dice.
 wp_enqueue_style('custom-css');
 
 
-// Create or delete roll history when installing or desinstalling the plugin
+// Create or delete roll history when installing or uninstalling the plugin
 register_activation_hook(__FILE__, 'cleyamDice_create_table');
-register_deactivation_hook(__FILE__, 'cleyamDice_delete_table');
-
 function cleyamDice_create_table()
 {
-    global $table_prefix, $wpdb;
-    $tblname = 'cleyam_rpg_dice';
-    $wp_track_table = $table_prefix . "$tblname ";
-
+    global $wpdb;
+    $wp_track_table = $wpdb->prefix . 'cleyam_rpg_dice';
     $charset_collate = $wpdb->get_charset_collate();
 
-    $sql = "CREATE TABLE $wp_track_table (id int(11) NOT NULL AUTO_INCREMENT, time datetime NOT NULL, diceNumber int(11) NOT NULL, diceType int(11) NOT NULL, result array(255) NOT NULL,PRIMARY KEY  (id)) $charset_collate;";
+    $sql = "CREATE TABLE IF NOT EXISTS $wp_track_table ( 
+        `id` int(11) NOT NULL AUTO_INCREMENT, 
+        `user_id` int(11) NOT NULL,
+        `time` datetime NOT NULL, 
+        `diceNumber` int(11) NOT NULL, 
+        `diceType` int(11) NOT NULL, 
+        `result` varchar(255) NOT NULL, 
+        PRIMARY KEY (id)
+        ) $charset_collate;";
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
 }
 
+register_deactivation_hook(__FILE__, 'cleyamDice_delete_table');
 function cleyamDice_delete_table()
 {
+    global $wpdb;
+    $wp_track_table = $wpdb->prefix . 'cleyam_rpg_dice';
+    $wpdb->query("DROP TABLE IF EXISTS $wp_track_table");
 }
 
 // Front display
