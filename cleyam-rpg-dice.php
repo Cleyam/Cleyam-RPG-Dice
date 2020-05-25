@@ -98,13 +98,12 @@ add_action('wp_ajax_insert_roll', 'cleyam_store_rolls');
 
 function cleyam_store_rolls()
 {
-
     global $wpdb;
-
     $wp_track_table = $wpdb->prefix . 'cleyam_rpg_dice';
+    $date = strtotime(date("Y-m-d H:i:s"));
+
     $data = array(
         'user_id' => get_current_user_id(),
-        'time' => date("Y-m-d H:i:s"),
         'diceNumber' => $_POST['diceNumber'],
         'diceType' => $_POST['diceType'],
         'result' => $_POST['result']
