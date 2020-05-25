@@ -13,8 +13,6 @@
 
 function cleyam_assets()
 {
-
-
     wp_register_style('prefix_bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
     wp_enqueue_style('prefix_bootstrap');
 
@@ -25,6 +23,7 @@ function cleyam_assets()
     wp_localize_script('cleyam-rpg-dice', 'ajaxurl', admin_url('admin-ajax.php'));
 }
 add_action('wp_enqueue_scripts', 'cleyam_assets');
+add_action('admin_enqueue_scripts', 'cleyam_assets');
 
 // Create or delete roll history when installing or uninstalling the plugin
 register_activation_hook(__FILE__, 'cleyamDice_create_table');
@@ -84,9 +83,8 @@ function cleyamDice_admin()
 {
     global $wpdb;
     $wp_track_table = $wpdb->prefix . 'cleyam_rpg_dice';
-    $result = $wpdb->get_var("SELECT * FROM $wp_track_table;");
-    var_dump($result);
-    die();
+    $wp_user_table = $wpdb->prefix . 'users';
+    $result = $wpdb->get_results("SELECT * FROM $wp_track_table;");
     ob_start();
     require_once('content/admin.php');
     $html = ob_get_clean();

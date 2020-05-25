@@ -13,19 +13,17 @@
         <tbody>
             <?php
             foreach ($result as $row) {
-                <<<ROW
-"<tr>
-<th scope="row">1</th>
-<td>Mark</td>
-<td>Otto</td>
-<td>@mdo</td>
-</tr>"
-ROW;
-            }
-
-
-
+                $user = $wpdb->get_results("SELECT * FROM $wp_user_table WHERE ID=$row->user_id;");
             ?>
+                <tr>
+                    <th scope="row"><?= $row->time ?></th>
+                    <td><?= $user[0]->user_login ?></td>
+                    <td><?= $row->diceType ?></td>
+                    <td><?= $row->diceNumber ?></td>
+                    <td><?= $row->result ?></td>
+                </tr>
+            <?php } ?>
+
 
         </tbody>
     </table>
